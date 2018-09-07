@@ -243,13 +243,14 @@ decode_header_tokens_permissive([Data | Tokens], Charset, Stack) ->
 convert(_To, <<"x-binaryenc">>, Data) ->
 	Data;
 convert(To, From, Data) ->
-	CD = case iconv:open(To, From) of
-			 {ok, Res} -> Res;
-			 {error, einval} -> throw({bad_charset, From})
-		 end,
-	Converted = iconv:conv(CD, Data),
-	iconv:close(CD),
-	Converted.
+	%%CD = case iconv:open(To, From) of
+	%%		 {ok, Res} -> Res;
+	%%		 {error, einval} -> throw({bad_charset, From})
+	%%	 end,
+	%%Converted = iconv:conv(CD, Data),
+	%%iconv:close(CD),
+	%%Converted.
+	iconv:convert(From, To, Data).
 
 
 decode_component(Headers, Body, MimeVsn = <<"1.0", _/binary>>, Options) ->
