@@ -250,7 +250,7 @@ convert(To, From, Data) ->
 	%%Converted = iconv:conv(CD, Data),
 	%%iconv:close(CD),
 	%%Converted.
-	iconv:convert(From, To, Data).
+	{ok, iconv:convert(From, To, Data)}.
 
 
 decode_component(Headers, Body, MimeVsn = <<"1.0", _/binary>>, Options) ->
@@ -491,13 +491,14 @@ decode_body(Type, Body, <<"x-binaryenc">>, _OutEncoding) ->
 decode_body(Type, Body, InEncoding, OutEncoding) ->
 	NewBody = decode_body(Type, Body),
 	InEncodingFixed = fix_encoding(InEncoding),
-	CD = case iconv:open(OutEncoding, InEncodingFixed) of
-		{ok, Res} -> Res;
-		{error, einval} -> throw({bad_charset, InEncodingFixed})
-	end,
-	{ok, Result} = iconv:conv(CD, NewBody),
-	iconv:close(CD),
-	Result.
+	%%CD = case iconv:open(OutEncoding, InEncodingFixed) of
+	%%	{ok, Res} -> Res;
+	%%	{error, einval} -> throw({bad_charset, InEncodingFixed})
+	%%end,
+	%%{ok, Result} = iconv:conv(CD, NewBody),
+	%%iconv:close(CD),
+	%Result.
+	iconv:convert(InEncodingFixed, OutEncoding, NewBody).
 
 -spec decode_body(Type :: binary() | 'undefined', Body :: binary()) -> binary().
 decode_body(undefined, Body) ->
